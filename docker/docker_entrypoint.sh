@@ -17,8 +17,9 @@ fi
 
 # we can't set core_dir, because the settings file is stored in `core_dir/appstate.json`
 # setting `core_dir` would therefore prevent pio from accessing
-export PLATFORMIO_PLATFORMS_DIR="${pio_cache_base}/platforms"
-export PLATFORMIO_PACKAGES_DIR="${pio_cache_base}/packages"
+export PLATFORMIO_PLATFORMS_DIR="/platforms"
+export PLATFORMIO_PACKAGES_DIR="/packages"
+export PLATFORMIO_GLOBALLIB_DIR="/piolibs"
 export PLATFORMIO_CACHE_DIR="${pio_cache_base}/cache"
 
 # If /build is mounted, use that as the build path

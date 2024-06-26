@@ -64,7 +64,10 @@ ENV \
   # Fix click python3 lang warning https://click.palletsprojects.com/en/7.x/python3/
   LANG=C.UTF-8 LC_ALL=C.UTF-8 \
   # Store globally installed pio libs in /piolibs
-  PLATFORMIO_GLOBALLIB_DIR=/piolibs
+  PLATFORMIO_GLOBALLIB_DIR=/piolibs \
+  PLATFORMIO_PLATFORMS_DIR=/platforms \
+  PLATFORMIO_PACKAGES_DIR=/packages
+
 
 # Support legacy binaries on Debian multiarch system. There is no "correct" way
 # to do this, other than using properly built toolchains...
@@ -99,7 +102,7 @@ RUN --mount=type=tmpfs,target=/root/.cargo if [ "$TARGETARCH$TARGETVARIANT" = "a
     CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse CARGO_HOME=/root/.cargo \
     pip3 install \
     --break-system-packages --no-cache-dir -r /requirements.txt -r /requirements_optional.txt \
-    && /platformio_install_deps.py /platformio.ini --libraries
+    && /platformio_install_deps.py /platformio.ini -lpt
 
 # Avoid unsafe git error when container user and file config volume permissions don't match
 RUN git config --system --add safe.directory '*'
@@ -127,6 +130,11 @@ HEALTHCHECK --interval=30s --timeout=30s \
   CMD curl --fail http://localhost:6052/version -A "HealthCheck" || exit 1
 
 COPY docker/docker_entrypoint.sh /entrypoint.sh
+
+COPY --from=base /piolibs /piolibs
+COPY --from=base /platforms /platforms
+COPY --from=base /packages /packages
+
 
 # The directory the user should mount their configuration files to
 VOLUME /config
