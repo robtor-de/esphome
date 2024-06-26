@@ -89,7 +89,9 @@ RUN \
     # Change some platformio settings
     && platformio settings set enable_telemetry No \
     && platformio settings set check_platformio_interval 1000000 \
-    && mkdir -p /piolibs
+    && mkdir -p /piolibs \
+    && mkdir -p /platforms \
+    && mkdir -p /packages
 
 
 # First install requirements to leverage caching when requirements don't change
@@ -102,7 +104,7 @@ RUN --mount=type=tmpfs,target=/root/.cargo if [ "$TARGETARCH$TARGETVARIANT" = "a
     CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse CARGO_HOME=/root/.cargo \
     pip3 install \
     --break-system-packages --no-cache-dir -r /requirements.txt -r /requirements_optional.txt \
-    && /platformio_install_deps.py /platformio.ini -lpt
+    && /platformio_install_deps.py /platformio.ini --libraries --platforms --tools
 
 # Avoid unsafe git error when container user and file config volume permissions don't match
 RUN git config --system --add safe.directory '*'
